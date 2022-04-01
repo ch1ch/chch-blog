@@ -205,6 +205,7 @@ https://developer.nintendo.com/html/online-docs/g1kr9vj6-en/Packages/middleware/
 里边安装个
 
 `On the Workloads tab, select Universal Windows Platform development.
+
 On the Individual Components tab, select Graphics debugger and GPU profiler for DirectX.`
 
 也就好了
