@@ -34,8 +34,50 @@
 试试EDEV模式。
 
 正常情况就能从Nintendo Target Manager里边看到设备了。
+![image](https://user-images.githubusercontent.com/3361015/161245411-778f8156-8680-44a9-86cb-472c81fb5fec.png)
+
+## 开发者后台设置
+
+主要需要在这里添加一个产品获得一个APPID
+![image](https://user-images.githubusercontent.com/3361015/161246239-cf2ac718-64a9-4808-a0da-ab90cc94ec41.png)
 
 
 ## unity部分
+
+先安装unity的switch支持
+就在上边选的那个目录里
+<img width="174" alt="1648806070(1)" src="https://user-images.githubusercontent.com/3361015/161238587-b8c9f2f6-f8ff-4c8b-a53b-2da5e322dd74.png">
+UnityForNintendoSwitch里边
+<img width="356" alt="1648806086(1)" src="https://user-images.githubusercontent.com/3361015/161238636-ffd5894c-2897-464d-84e3-ff766b3a77bf.png">
+基本就知道安装哪个了。
+
+到unity里边切到switch环境
+![image](https://user-images.githubusercontent.com/3361015/161245609-037d8154-1e88-4b4d-900b-904f77e6064f.png)
+主要就是这些设置。
+APPID就是上边获得的，然后下班还有两处复制就行。
+
+### 关于存档
+
+这块我参考了https://zhuanlan.zhihu.com/p/86218073
+以及上文的安装目录里的UnityForNintendoSwitch\Samples\NintendoSDKPlugin\FsSaveData 这个demo
+
+Save data Size和Journal Size需要设置成16384的倍数。
+最大不能超过4MB
+那些代码基本可用。不过就是需要主要
+代码里的saveDataSize = 458752;要按上文设置成unity里边的减去32*1024
+就是记得挂载目录前先
+```C#
+nn.Result result = nn.fs.SaveData.Mount(mountName, userId);
+```
+挂载后再
+```C#
+nn.fs.FileSystem.Unmount(mountName);
+```
+
+
+
+
+
+
 
 
