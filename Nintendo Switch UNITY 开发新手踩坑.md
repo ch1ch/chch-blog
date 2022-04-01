@@ -36,6 +36,8 @@
 正常情况就能从Nintendo Target Manager里边看到设备了。
 ![image](https://user-images.githubusercontent.com/3361015/161245411-778f8156-8680-44a9-86cb-472c81fb5fec.png)
 
+
+
 ## 开发者后台设置
 
 主要需要在这里添加一个产品获得一个APPID
@@ -56,6 +58,7 @@ UnityForNintendoSwitch里边
 主要就是这些设置。
 APPID就是上边获得的，然后下班还有两处复制就行。
 
+
 ### 关于存档
 
 这块我参考了https://zhuanlan.zhihu.com/p/86218073
@@ -65,18 +68,89 @@ Save data Size和Journal Size需要设置成16384的倍数。
 最大不能超过4MB
 那些代码基本可用。不过就是需要主要
 代码里的saveDataSize = 458752;要按上文设置成unity里边的减去32*1024
-就是记得挂载目录前先
+
+第一次使用的时候记得初始化，按照demo里的Initialize函数那么做就行
+
+然后挂载目录
 ```C#
 nn.Result result = nn.fs.SaveData.Mount(mountName, userId);
 ```
-挂载后再
+
+写文件还比较简单
+```C#
+ byte[] dataByteArray;
+  using (MemoryStream stream = new MemoryStream(saveDataSize)) // the stream size must be less than or equal to the save journal size
+  {
+      BinaryWriter binaryWriter = new BinaryWriter(stream);
+      binaryWriter.Write(GameData);
+      stream.Close();
+      dataByteArray = stream.GetBuffer();
+  }
+ ```     
+因为我会往这个目录里塞很多文件，所以还需要拼接目录，再执行操作，这块我之前还范蠢把Savefilename里边带了一个 "/"符号，不要带
+```C#
+filePath = string.Format("{0}:/{1}", mountName, Savefilename);
+result = nn.fs.File.Create(filePath, saveDataSize);
+result.abortUnlessSuccess();
+
+result = nn.fs.File.Open(ref fileHandle, filePath, nn.fs.OpenFileMode.Write);
+result.abortUnlessSuccess();
+
+result = nn.fs.File.Write(fileHandle, 0, dataByteArray, dataByteArray.LongLength, nn.fs.WriteOption.Flush);
+result.abortUnlessSuccess();
+
+nn.fs.File.Close(fileHandle);
+result = nn.fs.FileSystem.Commit(mountName);
+
+result.abortUnlessSuccess();
+```
+结束所有操作再
 ```C#
 nn.fs.FileSystem.Unmount(mountName);
 ```
 
 
+## 关于读档
+
+读档相对简单，按照demo，判断有没有初始化，然后按照DEMO谢就行。
+这块因为我是每次存档都会挂载卸载目录，读档这里也是这么做。你如果一直挂在那，也可以不用再挂载。
+
+读取的直接我因为比较大，就读出来字符串然后，再转化成JSON
+```C#
+byte[] datafile = new byte[fileSize];
+        result = nn.fs.File.Read(fileHandle, 0, datafile, fileSize);
+        result.abortUnlessSuccess();
+        nn.fs.File.Close(fileHandle);
+        string str;
+        using (MemoryStream stream = new MemoryStream(datafile))
+        {
+            BinaryReader reader = new BinaryReader(stream);
+            str = reader.ReadString();
+            Debug.Log(str);
+        }
+```
+
+基本就完事。
 
 
+
+
+## 其他要说的
+
+还要一些配置环境，也需要考虑一下然后安装，因为我这个版本有个bug就是无法build。后来发现是.net core sdk没安装，可以
+在NintendoSDK\Tools\SdkEnvironmentChecker里边有个SdkEnvironmentChecker.exe 可以运行看看
+<img width="263" alt="1648810367(1)" src="https://user-images.githubusercontent.com/3361015/161249939-e868fefb-a9d3-4fae-a88d-78b196156e97.png">
+这个东西也不用都安装，我这还有几个报红，也都跑起来正常…
+
+另外我做过版本的unity有个bug就是真机会紫屏。这个好像在2018d的unity是通病。
+https://developer.nintendo.com/html/online-docs/g1kr9vj6-en/Packages/middleware/UnityForNintendoSwitch/Documents/contents-en/Pages/Page_417572333.html
+官方有各个版本的已知bug列表。
+问题解决也比较简单.
+安装正常版vs（不是我常用的vscode）,
+里边安装个
+`On the Workloads tab, select Universal Windows Platform development.
+On the Individual Components tab, select Graphics debugger and GPU profiler for DirectX.`
+也就好了
 
 
 
