@@ -133,7 +133,44 @@ byte[] datafile = new byte[fileSize];
 基本就完事。
 
 
+## 关于操作
+这块我们目前比较粗暴
+放入SDK
+UnityForNintendoSwitch\Plugins\NintendoSDKPlugin\Libraries\NintendoSDKPlugin.unitypackage
 
+这些放头
+```C#
+private nn.hid.NpadState npadState;
+private nn.hid.NpadId[] npadIds = { nn.hid.NpadId.Handheld, nn.hid.NpadId.No1 };
+```    
+这些放start
+```C#
+nn.hid.Npad.Initialize();
+nn.hid.Npad.SetSupportedStyleSet(nn.hid.NpadStyle.Handheld | nn.hid.NpadStyle.JoyDual);
+nn.hid.Npad.SetSupportedIdType(npadIds);
+npadState = new nn.hid.NpadState();
+ ``` 
+ 
+然后把这些扔进Update
+```C#
+   for (int i = 0; i < npadIds.Length; i++)
+        {
+            nn.hid.Npad.GetState(ref npadState, npadIds[i], nn.hid.Npad.GetStyleSet(npadIds[i]));
+            if ((npadState.buttons & nn.hid.NpadButton.Y) != 0)
+            {
+            }
+            else if ((npadState.buttons & nn.hid.NpadButton.B) != 0)
+            {
+                TestBox.SetActive(false);
+            }
+            else if ((npadState.buttons & nn.hid.NpadButton.A) != 0)
+            {
+                TestBox.SetActive(true);
+            }
+        }
+```
+就对应按键啦……
+后期肯定要改，先跑起来再说吧
 
 ## 其他要说的
 
