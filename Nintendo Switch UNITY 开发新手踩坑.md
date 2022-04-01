@@ -192,7 +192,9 @@ npadState = new nn.hid.NpadState();
 
 还要一些配置环境，也需要考虑一下然后安装，因为我这个版本有个bug就是无法build。后来发现是.net core sdk没安装，可以
 在NintendoSDK\Tools\SdkEnvironmentChecker里边有个SdkEnvironmentChecker.exe 可以运行看看
+
 <img width="263" alt="1648810367(1)" src="https://user-images.githubusercontent.com/3361015/161249939-e868fefb-a9d3-4fae-a88d-78b196156e97.png">
+
 这个东西也不用都安装，我这还有几个报红，也都跑起来正常…
 
 另外我做过版本的unity有个bug就是真机会紫屏。这个好像在2018d的unity是通病。
@@ -201,8 +203,10 @@ https://developer.nintendo.com/html/online-docs/g1kr9vj6-en/Packages/middleware/
 问题解决也比较简单.
 安装正常版vs（不是我常用的vscode）,
 里边安装个
+
 `On the Workloads tab, select Universal Windows Platform development.
 On the Individual Components tab, select Graphics debugger and GPU profiler for DirectX.`
+
 也就好了
 
 
